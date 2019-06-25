@@ -1,0 +1,14 @@
+body {
+  background-color: #000000ea;
+}
+
+#playfield {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000ea;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+}
