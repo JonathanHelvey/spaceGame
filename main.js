@@ -81,7 +81,7 @@ function play(delta) {
 
   contain(spaceShip, {
     x: 10,
-    y: 1,
+    y: 10,
     width: Scale.width,
     height: Scale.height
   });
