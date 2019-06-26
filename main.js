@@ -57,6 +57,28 @@ function play(delta) {
   spaceShip.x += spaceShip.vx;
   spaceShip.y += spaceShip.vy;
 
+  stars.forEach(function(star) {
+    //Move the stars
+    star.y += star.vy;
+    //Check the blob's screen boundaries
+    let starHitsWall = contain(star, {
+      x: 0,
+      y: 0,
+      width: Scale.width,
+      height: Scale.height
+    });
+
+    //If the blob hits the top or bottom of the stage, reverse
+    //its direction
+    if (starHitsWall === "bottom") {
+      star.x = Math.ceil(Math.random() * app.screen.width);
+      star.y = Math.ceil(Math.random() * app.screen.width);
+    }
+
+    //Test for a collision. If any of the enemies are touching
+    //the explorer, set `explorerHit` to `true`
+  });
+
   contain(spaceShip, {
     x: 10,
     y: 1,
