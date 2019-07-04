@@ -14,6 +14,9 @@ let Scale = {
   unit: (clientm * 0.9) / 256
 };
 
+// Global varaibles
+let spaceShip, id, star, astroid;
+
 //Holder array variables
 let ground = [];
 let houses = [];
@@ -29,8 +32,8 @@ let Application = PIXI.Application,
 
 //Create a Pixi Application
 let app = new Application({
-  width: Scale.width,
-  height: Scale.height,
+  width: clientm * 1.0,
+  height: clientm * 1.0,
   antialias: true,
   transparent: false,
   autoDensity: true,
@@ -39,8 +42,6 @@ let app = new Application({
 
 //Add the canvas that Pixi automatically created for you to the HTML document
 document.getElementById("playfield").appendChild(app.view);
-
-let spaceShip, id, star, astroid;
 
 //load an image and run the `setup` function when it's done//LOADER
 loader
@@ -59,55 +60,14 @@ function gameLoop(delta) {
 }
 /////////////////////////////////////////////PLAY!!!!!!!
 function play(delta) {
-  //Use the cat's velocity to make it move
+  //Use the spaceships velocity to make it move
   spaceShip.x += spaceShip.vx;
   spaceShip.y += spaceShip.vy;
 
-  //Moving of Stars
-  stars.forEach(function(star) {
-    //Move the stars
-    star.y += star.vy;
-    //Check the blob's screen boundaries
-    let starHitsWall = contain(star, {
-      x: 0,
-      y: 0,
-      width: Scale.width,
-      height: Scale.height
-    });
+  moveStars();
+  moveAstroids();
+  spawnAstroids();
 
-    //If the star hits the  bottom of the stage, Math random it.
-    //its direction
-    if (starHitsWall === "bottom") {
-      star.x = Math.ceil(Math.random() * app.screen.width);
-      star.y = Math.ceil(Math.random() * app.screen.height);
-    }
-  });
-
-  //Moving Astroids
-  astroids.forEach(function(astroid, i) {
-    //Move the stars
-    astroid.y += astroid.vy;
-    //Check the blob's screen boundaries
-    let astroidHitsWall = contain(astroid, {
-      x: 0,
-      y: 0,
-      width: Scale.width,
-      height: Scale.height
-    });
-
-    //If the blob hits the top or bottom of the stage, reverse
-    //its direction
-    if (astroidHitsWall === "bottom") {
-      // app.stage.removeChild(astroids[i]);
-
-      astroid.x = Math.ceil(Math.random() * app.screen.width);
-      astroid.y = Math.ceil(Math.random() * app.screen.height);
-    }
-
-    //Test for a collision. If any of the enemies are touching
-    //the explorer, set `explorerHit` to `true`
-  });
-  //app.stage.addChild(astroid);
   contain(spaceShip, {
     x: 10,
     y: 10,
@@ -168,7 +128,7 @@ function setup() {
   state = play;
   app.ticker.add(delta => gameLoop(delta));
 
-  //Create the cat sprite
+  //Create the spaceShip sprite
   let spaceShipSprite = new PIXI.Texture.fromImage("/assets/spaceship.png");
   spaceShip = new Sprite(spaceShipSprite);
   //console.log(spaceShip);
@@ -193,8 +153,8 @@ function setup() {
     xOffset = 150,
     speed = 2,
     direction = 1;
-  //Change the sprite's position
 
+  //Change the sprite's position
   for (let i = 0; i < numberOfStars; i++) {
     star = new Sprite(starSprite);
     let x = spacing * i + xOffset;
@@ -206,7 +166,6 @@ function setup() {
     star.anchor.set(0.5, 0.5);
     //star.rotation = 0;
     star.vy = speed * direction;
-
     //star.vy = 0;
     star.tint = Math.random() * 0xffffff;
     // create some extra properties that will control movement :
@@ -230,8 +189,8 @@ let numberOfAstroids = 2,
   xOffset = 150,
   speed = 2,
   direction = 1;
-//Change the sprite's position
 
+//Change the sprite's position
 for (let i = 0; i < numberOfAstroids; i++) {
   astroid = new Sprite(astroidSprite);
   let x = spacing * i + xOffset;
@@ -245,7 +204,6 @@ for (let i = 0; i < numberOfAstroids; i++) {
   astroid.vy = speed * direction;
   astroid.hp = 1;
   //astroid.vy = 0;
-
   astroid.direction = Math.random() * Math.PI * 2;
   // this number will be used to modify the direction of the dude over time
   astroid.turningSpeed = Math.random() - 0.8;
@@ -257,6 +215,126 @@ for (let i = 0; i < numberOfAstroids; i++) {
   app.stage.addChild(astroid);
 }
 
+const astroidsSpawnCounterLimit = 30;
+let astroidsSpawnCounter = 0;
+
+//Spawning Astroids are not working! --NEED TO LOOK AT!
+function spawnAstroids() {
+  // disable spawning of particles until player moves
+  // if (spaceShip.vx === 0.0 && spaceShip.vy === 0) {
+  //   return;
+  // }
+
+  // slow down spawning of particles based on frame count
+  astroidsSpawnCounter += 1;
+  if (astroidsSpawnCounter < astroidsSpawnCounterLimit) {
+    return;
+  } else {
+    astroidsSpawnCounter = 0;
+  }
+
+  for (let index = 0; index < astroids; index++) {
+    // create an alias
+    const astroid = astroids[index];
+
+    if (astroid.parent === null) {
+      // setup this particle
+
+      let pstart = [];
+      let pend = [];
+
+      if (0.5 <= Math.random()) {
+        // x axis
+        if (0.5 <= Math.random()) {
+          pstart[0] = vm.xmin;
+          pend[0] = vm.xmax;
+        } else {
+          pstart[0] = vm.xmax;
+          pend[0] = vm.xmin;
+        }
+
+        pstart[1] = vm.ymin + (vm.ymax - vm.ymin) * Math.random();
+        pend[1] = vm.ymin + (vm.ymax - vm.ymin) * Math.random();
+      } else {
+        // y axis
+        if (0.5 <= Math.random()) {
+          pstart[1] = vm.ymin;
+          pend[1] = vm.ymax;
+        } else {
+          pstart[1] = vm.ymax;
+          pend[1] = vm.ymin;
+        }
+
+        pstart[0] = vm.xmin + (vm.xmax - vm.xmin) * Math.random();
+        pend[0] = vm.xmin + (vm.xmax - vm.xmin) * Math.random();
+      }
+
+      const pvelocity = vec2Normalize(vec2Direction(pstart, pend));
+
+      astroid.x = pstart[0];
+      astroid.y = pstart[1];
+
+      astroid.vx = pvelocity[0];
+      astroid.vy = pvelocity[1];
+
+      // aim astroid
+      aimSprite(astroid, pvelocity);
+      // add to container
+      app.stage.addChild(astroid);
+      // we're done
+      break;
+    }
+  }
+}
+
+function moveAstroids(step) {
+  step = 1;
+  //Moving Astroids
+  astroids.forEach(function(astroid, i) {
+    // astroid.y += astroid.vy;
+    //Check the astroids screen boundaries
+    let astroidHitsWall = contain(astroid, {
+      x: 0,
+      y: 0,
+      width: Scale.width,
+      height: Scale.height
+    });
+    //Move the astoirds
+    if (astroid.parent !== null) {
+      // astroid.x = astroid.x + astroid.vx * step;
+      astroid.y = astroid.y + astroid.vy * step;
+      //If the astroid hits the bottom of the stage, remove astoird
+      //its direction
+      if (astroidHitsWall === "bottom") {
+        app.stage.removeChild(astroid);
+      }
+    }
+    //Test for a collision. If any of the enemies are touching
+    //the explorer, set `explorerHit` to `true`
+  });
+}
+
+function moveStars(step) {
+  //Moving of Stars
+  stars.forEach(function(star) {
+    //Move the stars
+    star.y += star.vy;
+    //Check the stars screen boundaries
+    let starHitsWall = contain(star, {
+      x: 0,
+      y: 0,
+      width: Scale.width,
+      height: Scale.height
+    });
+
+    //If the star hits the  bottom of the stage, Math random it.
+    //its direction
+    if (starHitsWall === "bottom") {
+      star.x = Math.ceil(Math.random() * app.screen.width);
+      star.y = Math.ceil(Math.random() * app.screen.height);
+    }
+  });
+}
 //Create the bullet
 app.stage.interactive = true;
 let bulletSprite = new PIXI.Texture.fromImage("/assets/bullet.png");
@@ -283,6 +361,7 @@ function rotateToPoint(mx, my, px, py) {
   var angle = Math.atan2(dist_Y, dist_X);
   return angle;
 }
+
 // start animating
 function animate() {
   requestAnimationFrame(animate);
@@ -291,7 +370,6 @@ function animate() {
     bullets[b].position.y += Math.sin(bullets[b].rotation) * bulletSpeed;
   }
 }
-
 animate();
 
 //KEYBOARD Functions presses.////////////////////////////////////////////////////////////////
