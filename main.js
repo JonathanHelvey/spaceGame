@@ -221,9 +221,9 @@ let astroidsSpawnCounter = 0;
 //Spawning Astroids are not working! --NEED TO LOOK AT!
 function spawnAstroids() {
   // disable spawning of particles until player moves
-  // if (spaceShip.vx === 0.0 && spaceShip.vy === 0) {
-  //   return;
-  // }
+  if (spaceShip.vx === 0.0 && spaceShip.vy === 0) {
+    return;
+  }
 
   // slow down spawning of particles based on frame count
   astroidsSpawnCounter += 1;
@@ -306,7 +306,9 @@ function moveAstroids(step) {
       //If the astroid hits the bottom of the stage, remove astoird
       //its direction
       if (astroidHitsWall === "bottom") {
-        app.stage.removeChild(astroid);
+        //app.stage.removeChild(astroid);
+        astroid.x = Math.ceil(Math.random() * app.screen.width);
+        astroid.y = Math.ceil(Math.random() * app.screen.height);
       }
     }
     //Test for a collision. If any of the enemies are touching
