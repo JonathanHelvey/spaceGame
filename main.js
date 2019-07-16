@@ -287,6 +287,7 @@ function spawnAstroids() {
   }
 }
 
+//Move Astroids!
 function moveAstroids(step) {
   step = 1;
   //Moving Astroids
