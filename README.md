@@ -12,4 +12,4 @@ CSS3
 Jonathan Helvey
 
 ##DEMO
-<img src="SpaceGame.gif" data-canonical-src="SpaceGame.gif" width="800" height="600" />
+<img src="SpaceGame.gif" data-canonical-src="SpaceGame.gif" width="800" height="800" />
