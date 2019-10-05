@@ -1,4 +1,4 @@
-# spaceGame
+# Space Game!!!
 
 ## Built With
 ```
@@ -13,3 +13,6 @@ Jonathan Helvey
 
 ## DEMO
 <img src="SpaceGame.gif" data-canonical-src="SpaceGame.gif" width="600" height="600" />
+--- 
+This application is still a work in progress!
+---
